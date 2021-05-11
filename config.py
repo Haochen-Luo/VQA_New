@@ -1,8 +1,8 @@
 # paths
-qa_path = 'vqa'  # directory containing the question and annotation jsons
-train_path = 'mscoco/train2014'  # directory of training images
-val_path = 'mscoco/val2014'  # directory of validation images
-test_path = 'mscoco/test2015'  # directory of test images
+qa_path = '/kaggle/input/vqa-data'  # directory containing the question and annotation jsons
+train_path = '/kaggle/input/coco2014/train2014/train2014'  # directory of training images
+val_path = '/kaggle/input/coco2014/val2014//val2014'  # directory of validation images
+test_path = '/kaggle/input/cocotest2014/test2014'  # directory of test images
 preprocessed_path = './resnet-14x14.h5'  # path where preprocessed features are saved to and loaded from
 vocabulary_path = 'vocab.json'  # path where the used vocabularies for question and answers are saved to
 
