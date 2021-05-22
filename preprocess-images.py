@@ -15,8 +15,9 @@ from resnet import resnet as caffe_resnet
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
+        print("before")
         self.model = caffe_resnet.resnet152(pretrained=True)
-
+        print("after")
         def save_output(module, input, output):
             self.buffer = output
         self.model.layer4.register_forward_hook(save_output)
