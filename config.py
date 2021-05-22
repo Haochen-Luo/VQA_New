@@ -1,9 +1,9 @@
 # paths
-qa_path = '/Data_HDD/fyp22_haochen_luo/vqa_final/basic_vqa/datasets'  # directory containing the question and annotation jsons
+qa_path = '/Data_HDD/fyp22_haochen_luo/vqa_final/basic_vqa/datasets/vqa'  # directory containing the question and annotation jsons
 train_path = '/Data_HDD/fyp22_haochen_luo/vqa_final/basic_vqa/datasets/Images/train2014'  # directory of training images
 val_path = '/Data_HDD/fyp22_haochen_luo/vqa_final/basic_vqa/datasets/Images/val2014'  # directory of validation images
 test_path = '/Data_HDD/fyp22_haochen_luo/vqa_final/basic_vqa/datasets/Images/test2015'  # directory of test images
-preprocessed_path = './resnet-14x14.h5'  # path where preprocessed features are saved to and loaded from
+preprocessed_path = './resnet-14x14.h5/resnet152-95e0e999.pth'  # path where preprocessed features are saved to and loaded from
 vocabulary_path = 'vocab.json' 
 
 task = 'OpenEnded'
