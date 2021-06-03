@@ -109,18 +109,13 @@ def main():
 
     for i in range(config.epochs):
         _ = run(net, train_loader, optimizer, tracker, train=True, prefix='train', epoch=i)
-        r = run(net, val_loader, optimizer, tracker, train=False, prefix='val', epoch=i)
+#         r = run(net, val_loader, optimizer, tracker, train=False, prefix='val', epoch=i)
 
         results = {
             'name': name,
             'tracker': tracker.to_dict(),
             'config': config_as_dict,
             'weights': net.state_dict(),
-            'eval': {
-                'answers': r[0],
-                'accuracies': r[1],
-                'idx': r[2],
-            },
             'vocab': train_loader.dataset.vocab,
         }
         torch.save(results, target_name)
