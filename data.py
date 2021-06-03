@@ -12,13 +12,16 @@ import torchvision.transforms as transforms
 import config
 import utils
 
+with open(r"F:\dataset\generated\vqa_gen_train.json") as j:
+    result = json.load(j)
+
 
 def get_loader(train=False, val=False, test=False):
     """ Returns a data loader for the desired split """
     assert train + val + test == 1, 'need to set exactly one of {train, val, test} to True'
     split = VQA(
-        utils.path_for(train=train, val=val, test=test, question=True),
-        utils.path_for(train=train, val=val, test=test, answer=True),
+        None,
+        None,
         config.preprocessed_path,
         answerable_only=train,
     )
@@ -43,13 +46,13 @@ class VQA(data.Dataset):
     """ VQA dataset, open-ended """
     def __init__(self, questions_path, answers_path, image_features_path, answerable_only=False):
         super(VQA, self).__init__()
-        with open(questions_path, 'r') as fd:
-            questions_json = json.load(fd)
-        with open(answers_path, 'r') as fd:
-            answers_json = json.load(fd)
+        # with open(questions_path, 'r') as fd:
+        #     questions_json = json.load(fd)
+        # with open(answers_path, 'r') as fd:
+        #     answers_json = json.load(fd)
         with open(config.vocabulary_path, 'r') as fd:
             vocab_json = json.load(fd)
-        self._check_integrity(questions_json, answers_json)
+        # self._check_integrity(questions_json, answers_json)
 
         # vocab
         self.vocab = vocab_json
@@ -57,15 +60,16 @@ class VQA(data.Dataset):
         self.answer_to_index = self.vocab['answer']
 
         # q and a
-        self.questions = list(prepare_questions(questions_json))
-        self.answers = list(prepare_answers(answers_json))
+        self.questions = list(prepare_questions())
+        self.answers = list(prepare_answers())
         self.questions = [self._encode_question(q) for q in self.questions]
         self.answers = [self._encode_answers(a) for a in self.answers]
 
         # v
         self.image_features_path = image_features_path
         self.coco_id_to_index = self._create_coco_id_to_index()
-        self.coco_ids = [q['image_id'] for q in questions_json['questions']]
+
+        self.coco_ids =  [int(item[0]['image_id'])  for item in result  for img in item[1]]
 
         # only use questions that have at least one answer?
         self.answerable_only = answerable_only
@@ -92,10 +96,7 @@ class VQA(data.Dataset):
     def _check_integrity(self, questions, answers):
         """ Verify that we are using the correct data """
         qa_pairs = list(zip(questions['questions'], answers['annotations']))
-        assert all(q['question_id'] == a['question_id'] for q, a in qa_pairs), 'Questions not aligned with answers'
-        assert all(q['image_id'] == a['image_id'] for q, a in qa_pairs), 'Image id of question and answer don\'t match'
-        assert questions['data_type'] == answers['data_type'], 'Mismatched data types'
-        assert questions['data_subtype'] == answers['data_subtype'], 'Mismatched data subtypes'
+
 
     def _find_answerable(self):
         """ Create a list of indices into questions that will have at least one answer that is in the vocab """
@@ -171,17 +172,23 @@ _punctuation = re.compile(r'([{}])'.format(re.escape(_punctuation_chars)))
 _punctuation_with_a_space = re.compile(r'(?<= )([{0}])|([{0}])(?= )'.format(_punctuation_chars))
 
 
-def prepare_questions(questions_json):
+def prepare_questions(questions_json = None):
     """ Tokenize and normalize questions from a given question json in the usual VQA format. """
-    questions = [q['question'] for q in questions_json['questions']]
+    with open('/Data_HDD/fyp22_haochen_luo/strong/gen/data/vqa_gen_train.json') as j:
+        result = json.load(j)
+    questions = [pair[1] for item in result for pair in item[1]]
+    # questions = [q['question'] for q in questions_json['questions']]
     for question in questions:
         question = question.lower()[:-1]
         yield question.split(' ')
 
 
-def prepare_answers(answers_json):
+def prepare_answers(answers_json = None):
     """ Normalize answers from a given answer json in the usual VQA format. """
-    answers = [[a['answer'] for a in ans_dict['answers']] for ans_dict in answers_json['annotations']]
+    with open('/Data_HDD/fyp22_haochen_luo/strong/gen/data/vqa_gen_train.json') as j:
+        result = json.load(j)
+    answers = [[pair[0][0]] for item in result for pair in item[1]]
+
     # The only normalization that is applied to both machine generated answers as well as
     # ground truth answers is replacing most punctuation with space (see [0] and [1]).
     # Since potential machine generated answers are just taken from most common answers, applying the other
